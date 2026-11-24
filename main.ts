@@ -23,5 +23,19 @@ const TEXT =
   'The stranger who will maintain your code is you, six months from now — leave them a map, not a maze.';
 
 const dir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+
+// Guard (mirrors the competition gate): the entry must be UTF-8 text of
+// 1–120 characters, not only white space. The program used to write TEXT
+// unchecked, so a later edit could silently break the gate; count code
+// points (not UTF-16 units) and fail loudly instead of writing an
+// out-of-range entry.
+const codePoints = [...TEXT].length;
+if (codePoints < 1 || codePoints > 120) {
+  throw new Error(`entry must be 1-120 characters, got ${codePoints}`);
+}
+if (TEXT.trim().length === 0) {
+  throw new Error('entry must not be only white space');
+}
+
 mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, 'entry.txt'), TEXT, 'utf8');
